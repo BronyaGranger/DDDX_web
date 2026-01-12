@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻唱时刻 - 话唠大仙</title>
+    <meta name="referrer" content="no-referrer">
+    <link rel="icon" href="https://i1.hdslb.com/bfs/face/99e2ceccf4060367cc407279bbedd5c1dc16374f.jpg" type="image/jpeg">
+
+    <style>
+        /* --- 基础设置 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f4f5f7; /* B站同款灰背景 */
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* --- 顶部导航栏 --- */
+        .header {
+            max-width: 1000px; margin: 0 auto 30px; 
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        
+        .page-title {
+            font-size: 28px; color: #fb7299; font-weight: 800;
+            background: white; padding: 10px 30px; border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(251, 114, 153, 0.2);
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: absolute; left: 0;
+            text-decoration: none; color: #666; font-weight: bold;
+            display: flex; align-items: center;
+            background: white; padding: 8px 15px; border-radius: 20px;
+            transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .back-btn:hover { color: #fb7299; transform: translateX(-5px); }
+
+        /* --- 内容网格区 --- */
+        .grid-container {
+            max-width: 1000px; margin: 0 auto;
+            display: grid;
+            /* 自动适应宽度：电脑一行3-4个，手机一行1-2个 */
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* --- 卡片样式 --- */
+        .video-card {
+            background: white; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease; text-decoration: none; color: inherit;
+            display: flex; flex-direction: column;
+        }
+
+        .video-card:hover {
+            transform: translateY(-8px); /* 悬浮上移效果 */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .cover-box {
+            width: 100%; height: 160px; overflow: hidden; position: relative;
+        }
+        
+        .cover-img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .video-card:hover .cover-img { transform: scale(1.1); } /* 图片放大效果 */
+
+        .card-info { padding: 15px; }
+        .card-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 8px; line-height: 1.4;}
+        .card-desc { font-size: 13px; color: #999; }
+        .tag {
+            display: inline-block; background: #f1f2f3; color: #666;
+            font-size: 12px; padding: 2px 8px; border-radius: 4px; margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header { justify-content: center; }
+            .back-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+            .back-btn:hover { transform: translateX(-50%) scale(1.1); }
+            .page-title { font-size: 20px; }
+            body { padding-bottom: 80px; } /* 给手机底部留出按钮空间 */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← 返回主页</a>
+        <div class="page-title">🎤 翻唱时刻</div>
+    </div>
+
+    <div class="grid-container">
+
+        <a href="https://www.bilibili.com/video/BVxxxxxxxx" target="_blank" class="video-card">
+            <div class="cover-box">
+                <img src="./pic.jpg" class="cover-img" alt="封面">
+            </div>
+            <div class="card-info">
+                <div class="card-title">【翻唱】这里写歌曲名字</div>
+                <div class="card-desc">2026-01-12 发布</div>
+                <span class="tag">高音预警</span>
+            </div>
+        </a>
+
+        <a href="https://www.bilibili.com/video/BVxxxxxxxx" target="_blank" class="video-card">
+            <div class="cover-box">
+                <img src="./pic.jpg" class="cover-img" alt="封面">
+            </div>
+            <div class="card-info">
+                <div class="card-title">【整活】这里写另一个视频标题</div>
+                <div class="card-desc">播放量 100w+ 达成！</div>
+                <span class="tag">全场最佳</span>
+            </div>
+        </a>
+
+        <a href="#" class="video-card">
+            <div class="cover-box">
+                <img src="./pic.jpg" class="cover-img" alt="封面">
+            </div>
+            <div class="card-info">
+                <div class="card-title">更多视频制作中...</div>
+                <div class="card-desc">敬请期待</div>
+            </div>
+        </a>
+
+    </div>
+
+</body>
+</html>
