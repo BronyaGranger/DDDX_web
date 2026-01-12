@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>话唠大仙的主页</title>
+    <meta name="referrer" content="no-referrer">
+
+    <style>
+        /* --- 1. 全局设置 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body {
+            height: 100%;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f4f5f7;
+            overflow: hidden; 
+        }
+
+        /* --- 2. 滚动容器 --- */
+        .main-container {
+            height: 100%;
+            overflow-y: scroll; 
+            scroll-snap-type: y mandatory; 
+            scroll-behavior: smooth; 
+        }
+
+        /* --- 3. 页面布局 --- */
+        .section {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            scroll-snap-align: start;
+            position: relative; 
+            overflow: hidden; 
+        }
+
+        .bg-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px) brightness(0.9); 
+            transform: scale(1.05); 
+            z-index: 0; 
+        }
+
+        /* 卡片样式 */
+        .profile-card {
+            background: rgba(255, 240, 245, 0.95); 
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 360px; 
+            height: 450px; 
+            display: flex; 
+            align-items: center; 
+            overflow: hidden; 
+            transition: width 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s;
+            position: relative;
+            z-index: 5;
+        }
+
+        .profile-card:hover {
+            width: 750px; 
+            transform: translateY(-8px); 
+        }
+
+        .card-left {
+            min-width: 360px; height: 100%; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; padding: 40px;
+            border-right: 1px solid transparent; transition: border-color 0.5s;
+        }
+        .profile-card:hover .card-left { border-right: 1px solid #eee; }
+
+        .card-right {
+            min-width: 390px; height: 100%; padding: 30px;
+            background-color: transparent; 
+            display: flex; flex-direction: column; justify-content: center;
+            opacity: 0; transform: translateX(30px); transition: all 0.4s ease 0.1s; 
+        }
+
+        .profile-card:hover .card-right { opacity: 1; transform: translateX(0); }
+
+        .link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .mini-link {
+            display: flex; align-items: center; background: white; padding: 10px 15px;
+            border-radius: 12px; text-decoration: none; color: #333; font-size: 14px;
+            border: 1px solid #eee; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .mini-link:hover { border-color: #fb7299; color: #fb7299; transform: translateX(5px); }
+        .mini-icon { width: 24px; height: 24px; margin-right: 10px; border-radius: 50%; object-fit: cover; }
+
+        /* 贴纸样式 */
+        .bg-sticker {
+            position: absolute; cursor: pointer; opacity: 0.8; 
+            border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            z-index: 1;
+            /* 确保图片不被拉伸 */
+            object-fit: contain; 
+        }
+        .bg-sticker:hover {
+            transform: scale(1.2) rotate(15deg) !important; 
+            opacity: 1; z-index: 6; box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        /* 基础文本样式 */
+        .avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #fb7299; transition: transform 0.3s; cursor: pointer; margin-bottom: 15px; }
+        .avatar:hover { transform: scale(1.1) rotate(5deg); }
+        h1 { margin: 15px 0 10px; color: #333; font-size: 22px; font-weight: 700;}
+        p { color: #666; line-height: 1.8; margin-bottom: 15px; font-size: 14px; }
+        h2.big-text { color:#fb7299; font-size:32px; margin:20px 0; font-weight: 800; letter-spacing: 1px;}
+        h3 { font-size: 16px; color: #333; margin-bottom: 10px; font-weight: bold; border-left: 4px solid #fb7299; padding-left: 10px;}
+
+        .sound-btn {
+            background: linear-gradient(45deg, #23ade5, #4cc3ff); color: white; border: none;
+            padding: 12px 30px; border-radius: 50px; font-size: 14px; cursor: pointer; margin-top: 10px; 
+            box-shadow: 0 6px 15px rgba(35, 173, 229, 0.4); transition: transform 0.2s;
+        }
+        .sound-btn:active { transform: scale(0.95); }
+
+        /* 导航箭头 */
+        .arrow-btn {
+            position: absolute; 
+            width: 50px; height: 50px;
+            background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s; 
+            z-index: 10;
+        }
+        .arrow-btn svg { width: 24px; height: 24px; fill: #fb7299; transition: fill 0.3s; }
+        .arrow-btn:hover { background: #fb7299; transform: scale(1.1); }
+        .arrow-btn:hover svg { fill: white; }
+        .arrow-btn.blue-style svg { fill: #23ade5; }
+        .arrow-btn.blue-style:hover { background: #23ade5; }
+        .arrow-btn.blue-style:hover svg { fill: white; }
+
+        .arrow-bottom { bottom: 40px; animation: float-down 2s infinite ease-in-out; }
+        .arrow-top { top: 40px; transform: rotate(180deg); animation: float-up 2s infinite ease-in-out; }
+        .arrow-top:hover { transform: rotate(180deg) scale(1.1); }
+
+        @keyframes float-down { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+        @keyframes float-up { 0%, 100% { transform: translateY(0) rotate(180deg); } 50% { transform: translateY(-10px) rotate(180deg); } }
+
+        @media (max-width: 768px) {
+            .profile-card:hover { width: 360px; } 
+            .card-right { display: none; } 
+            .profile-card { height: auto; padding-bottom: 30px;}
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+
+        <div class="section" id="page1">
+            <div class="bg-layer" style="background-image: url('./background1.jpg');"></div>
+
+            <a href="#page4" class="arrow-btn arrow-top" title="上一页">
+                <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </a>
+            
+            <img src="./pic.jpg" class="bg-sticker" style="top: 8%; left: 5%; width: 70px;" onclick="playAudio('cat.mp3')" alt="贴纸">
+            <img src="./pic.jpg" class="bg-sticker" style="top: 50%; right: 8%; width: 50px;" onclick="playAudio('cat.mp3')" alt="贴纸">
+
+            <div class="profile-card">
+                <div class="card-left">
+                    <a href="https://space.bilibili.com/" target="_blank">
+                        <img src="https://i1.hdslb.com/bfs/face/99e2ceccf4060367cc407279bbedd5c1dc16374f.jpg" alt="头像" class="avatar">
+                    </a>
+                    <h1>话唠大仙-快乐生活</h1>
+                    <p>话唠型cos唠嗑主播<br>每天晚八点半开播2小时<br>周一休息</p>
+                    <button class="sound-btn" onclick="playAudio('cat.mp3')">点击听听声音 🔊</button>
+                </div>
+                <div class="card-right">
+                    <h3>🎬 精彩切片推荐</h3>
+                    <div class="link-grid">
+                        <a href="#" class="mini-link"><img src="./pic.jpg" class="mini-icon"> 搞笑合集</a>
+                        <a href="#" class="mini-link"><img src="./pic.jpg" class="mini-icon"> 翻唱时刻</a>
+                        <a href="#" class="mini-link"><img src="./pic.jpg" class="mini-icon"> 粉丝二创</a>
+                        <a href="#" class="mini-link"><img src="./pic.jpg" class="mini-icon"> 直播回放</a>
+                    </div>
+                    <h3 style="margin-top: 20px;">📢 最新动态</h3>
+                    <p style="font-size: 13px; background: #fff; padding: 10px; border-radius: 8px; border: 1px dashed #ccc;">
+                        本周日晚上有特别活动，大家记得准时来直播间哦！会有抽奖活动~
+                    </p>
+                </div>
+            </div>
+            
+            <a href="#page2" class="arrow-btn arrow-bottom" title="下一页">
+                <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </a>
+        </div>
+
+        <div class="section" id="page2">
+            <div class="bg-layer" style="background-image: url('./background2.jpg');"></div>
+
+            <a href="#page1" class="arrow-btn arrow-top blue-style" title="上一页">
+                <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </a>
+
+            <img src="./pic.jpg" class="bg-sticker" style="top: 40%; left: 2%; width: 100px;" onclick="playAudio('cat.mp3')" alt="贴纸">
+            <img src="./pic.jpg" class="bg-sticker" style="bottom: 15%; right: 15%; width: 60px;" onclick="playAudio('cat.mp3')" alt="贴纸">
+
+            <div class="profile-card" style="width: 380px; display: block; height: auto;">
+                <div class="card-left" style="border: none; padding: 50px 40px; min-width: 100%;">
+                    <h1>听听我的声音</h1>
+                    <p>点击下方按钮，或者点击背景里的小图片试试？</p>
+                    <button class="sound-btn" onclick="playAudio('cat.mp3')">播放 cat.mp3 🔊</button>
+                </div>
+            </div>
+            
+            <a href="#page3" class="arrow-btn arrow-bottom blue-style" title="下一页">
+                <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </a>
+        </div>
+
+        <div class="section" id="page3">
+            <div class="bg-layer" style="background-image: url('./background3.jpg');"></div>
+
+            <a href="#page2" class="arrow-btn arrow-top" title="上一页">
+                <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </a>
+
+            <img src="./pic.jpg" class="bg-sticker" style="top: 10%; left: 50%; margin-left: -40px; width: 80px;" onclick="playAudio('cat.mp3')" alt="贴纸">
+
+            <div class="profile-card" style="width: 380px; display: block; height: auto;">
+                <div class="card-left" style="border: none; padding: 50px 40px; min-width: 100%;">
+                    <h1>加入粉丝群</h1>
+                    <p>为了防止走丢，赶紧进群！</p>
+                    <h2 class="big-text">365021707</h2>
+                    <p style="font-size:12px; color:#999;">长按复制群号</p>
+                </div>
+            </div>
+            
+            <a href="#page4" class="arrow-btn arrow-bottom" title="下一页">
+                <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </a>
+        </div>
+
+        <div class="section" id="page4">
+            <div class="bg-layer" style="background-image: url('./background4.jpg');"></div>
+
+            <a href="#page3" class="arrow-btn arrow-top blue-style" title="上一页">
+                <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </a>
+
+            <img src="./pic.jpg" class="bg-sticker" style="bottom: 25%; left: 10%; width: 70px;" onclick="playAudio('cat.mp3')" alt="贴纸">
+            <img src="./pic.jpg" class="bg-sticker" style="top: 15%; right: 5%; width: 55px;" onclick="playAudio('cat.mp3')" alt="贴纸">
+
+            <div class="profile-card" style="width: 380px; display: block; height: auto;">
+                <div class="card-left" style="border: none; padding: 50px 40px; min-width: 100%;">
+                    <h1>感谢关注</h1>
+                    <p>记得去B站给我一键三连哦！</p>
+                    <a href="https://space.bilibili.com/" style="display:inline-block; margin-top:10px; text-decoration:none; color:#23ade5; font-weight:bold; border-bottom: 1px dashed #23ade5;">前往我的B站主页 ></a>
+                </div>
+            </div>
+            
+            <a href="#page1" class="arrow-btn arrow-bottom blue-style" title="回到首页">
+                <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        function playAudio(filename) {
+            var audioPath = './' + filename;
+            var audio = new Audio(audioPath); 
+            audio.play().catch(function(error){
+                console.log("播放失败:", error);
+                alert("播放失败！请检查你的文件夹里是不是真的有 '" + filename + "' 这个文件。");
+            });
+        }
+    </script>
+
+</body>
+</html>
